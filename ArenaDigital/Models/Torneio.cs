@@ -14,6 +14,7 @@ public class Torneio
         DataTermino = dataTermino;
         Premiacao = premiacao;
         Status = status;
+        Equipes = [];
     }
     public Guid Id { get; }
     public string Nome { get; private set; }
@@ -24,12 +25,11 @@ public class Torneio
     public decimal Premiacao { get; private set; }
     public StatusTorneioEnum Status { get; private set; }
     public Equipe Equipe { get; private set; }
+    public readonly List<Equipe> Equipes;
 
     public void AlterarStatusTorneio(StatusTorneioEnum status)
     {
         Status = status;
-
-        if(status == StatusTorneioEnum.Encerrado && )
     }
     public override string ToString() => $"Torneio: [{Id}] {Nome} | Jogo: {Jogo} | Modalidade: {Modalidade} | Início: {DataInicio} | Término: {DataTermino} | Premiação: {Premiacao:C} | Status: {Status}";
 

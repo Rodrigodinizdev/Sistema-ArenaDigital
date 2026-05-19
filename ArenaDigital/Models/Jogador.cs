@@ -29,5 +29,5 @@ public class Jogador
 
         Console.WriteLine($"{Nome} transferido para equipe {Equipe.Nome}");
     }
-    public override string ToString() => $"Jogador: [{Id}] {Nome} | NickName: {NickName} | Nacionalidade: {Nacionalidade} | Função: {Funcao} | Equipe: {Equipe}";
+    public override string ToString() => $"Jogador: [{Id}] {Nome} | NickName: {NickName} | Nacionalidade: {Nacionalidade} | Função: {Funcao} | Equipe: {Equipe.Nome}";
 }
