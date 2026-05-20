@@ -4,9 +4,10 @@ namespace ArenaDigital.Models;
 
 public class Torneio
 {
-    public Torneio(string nome, string jogo, ModalidadeEnum modalidade, DateTime dataInicio, DateTime dataTermino, decimal premiacao, StatusTorneioEnum status)
+    public Torneio(string codigoUnico, string nome, string jogo, ModalidadeEnum modalidade, DateTime dataInicio, DateTime dataTermino, decimal premiacao, StatusTorneioEnum status)
     {
         Id = Guid.NewGuid();
+        CodigoUnico = codigoUnico;
         Nome = nome;
         Jogo = jogo;
         Modalidade = modalidade;
@@ -17,6 +18,7 @@ public class Torneio
         Equipes = [];
     }
     public Guid Id { get; }
+    public string CodigoUnico { get; private set; }
     public string Nome { get; private set; }
     public string Jogo { get; private set; }
     public ModalidadeEnum Modalidade { get; private set; }
