@@ -32,6 +32,10 @@ while (true)
             CadastrarJogador();
             break;
 
+        case "3":
+            CadastrarTorneio();
+            break;
+
         case "5":
             ListarEquipes();
             break;
@@ -57,11 +61,15 @@ void CadastrarEquipe()
 {
     Console.WriteLine("Digite a TAG da equipe (5 caracteres Maiúsculos no máximo): ");
 
-    string tag = Console.ReadLine();
-    while (string.IsNullOrWhiteSpace(tag.ToUpper()) || tag.Length > 5)
+    string tag = Console.ReadLine().ToUpper();
+    while (string.IsNullOrWhiteSpace(tag) || tag.Length > 5 || Equipes.Any(e => e.Tag == tag))
     {
-        Console.WriteLine("Tag não pode ser vazia e deve ter 5 caracteres");
-        tag = Console.ReadLine();
+        Console.WriteLine(tag.Length > 5
+            ? "Tag deve ter no máximo 5 caracteres"
+            : Equipes.Any(e => e.Tag == tag)
+                ? "Tag já existe, digite outra"
+                : "Tag não pode ser vazia");
+        tag = Console.ReadLine().ToUpper();
     }
 
     Console.WriteLine("Digite o nome da equipe: ");
@@ -116,15 +124,11 @@ void CadastrarJogador()
     Console.WriteLine("Digite o nickName do jogador: ");
 
     string nickName = Console.ReadLine();
-    while (string.IsNullOrWhiteSpace(nickName))
+    while (string.IsNullOrWhiteSpace(nickName) || Jogadores.Any(j => j.NickName == nickName))
     {
-        Console.WriteLine("nickName não pode ser vazio");
-        nickName = Console.ReadLine();
-    }
-
-    while (Jogadores.Any(j => j.NickName == nickName))
-    {
-        Console.WriteLine("Já existe este nickName cadastrado. Digite outro: ");
+        Console.WriteLine(string.IsNullOrWhiteSpace(nickName)
+            ? "NickName não pode ser vazio"
+            : "NickName já existe, digite outro");
         nickName = Console.ReadLine();
     }
 
@@ -199,3 +203,78 @@ void ListarJogadores()
     Jogadores.ForEach(j => Console.WriteLine(j));
 }
 
+void CadastrarTorneio()
+{
+    Console.WriteLine("Digite o Código do torneio (EX: BR-2025-01): ");
+
+    string codigoTorneio = Console.ReadLine();
+    while (string.IsNullOrWhiteSpace(codigoTorneio) || Torneios.Any(t => t.CodigoUnico == codigoTorneio))
+    {
+        Console.WriteLine(string.IsNullOrWhiteSpace(codigoTorneio)
+            ? "Código não pode ser vazio"
+            : "Código já existe, digite outro código");
+
+        codigoTorneio = Console.ReadLine();
+    }
+
+    Console.WriteLine("Digite o nome do Torneio: ");
+
+    string nomeTorneio = Console.ReadLine();
+    while (string.IsNullOrWhiteSpace(nomeTorneio))
+    {
+        Console.WriteLine("Nome não pode ser vazio");
+        nomeTorneio = Console.ReadLine();
+    }
+
+    Console.WriteLine("Digite o nome do Jogo: ");
+
+    string nomeJogo = Console.ReadLine();
+    while (string.IsNullOrWhiteSpace(nomeJogo))
+    {
+        Console.WriteLine("Nome não pode ser vazio");
+        nomeJogo = Console.ReadLine();
+    }
+
+    Console.WriteLine("=== MODALIDADE DO TORNEIO ===");
+    Console.WriteLine("1 - Liga");
+    Console.WriteLine("2 - Mata-Mata");
+
+    Console.WriteLine("Escolha uma modalidade: ");
+    int opcao;
+
+    while (!int.TryParse(Console.ReadLine(), out opcao) || opcao < 1 || opcao > 2)
+        Console.WriteLine("Escolha a opção 1 ou 2");
+
+    ModalidadeEnum modalidadeEscolhida = (ModalidadeEnum)opcao;
+
+    int maxEquipes = int.MaxValue;
+
+    if (modalidadeEscolhida == ModalidadeEnum.MataMata)
+    {
+        Console.WriteLine("Digite o número máximo de equipes (máx 64): ");
+        while (!int.TryParse(Console.ReadLine(), out maxEquipes) || maxEquipes < 2 || maxEquipes > 64)
+            Console.WriteLine("Mata-Mata aceita no máximo 64 equipes (mínimo 2)");
+    }
+
+    Console.WriteLine("Digite a data de início do torneio: ");
+
+    DateTime dataInicio;
+    while (!DateTime.TryParse(Console.ReadLine(), out dataInicio) || dataInicio < DateTime.Now.AddDays(7))
+        Console.WriteLine("Data Inválida! data deve ser no mínimo 7 dias após data de hoje");
+
+    Console.WriteLine("Digite a data de término do torneio: ");
+
+    DateTime dataTermino;
+    while (!DateTime.TryParse(Console.ReadLine(), out dataTermino) || dataTermino < dataInicio)
+        Console.WriteLine("Data Inválida! data deve ser no mínimo no mesmo dia que o inicio do torneio");
+
+    Console.WriteLine("Digite o valor da premiação: ");
+
+    decimal premiacao;
+    while (!decimal.TryParse(Console.ReadLine(), out premiacao) || premiacao <= 0)
+        Console.WriteLine("Premiação deve ser maior que 0");
+
+    var torneio = new Torneio(codigoTorneio, nomeTorneio, nomeJogo, modalidadeEscolhida, maxEquipes, dataInicio, dataTermino, premiacao);
+    Torneios.Add(torneio);
+    Console.WriteLine($"{torneio} | Torneio criado com sucesso!");
+}
