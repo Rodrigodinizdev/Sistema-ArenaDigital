@@ -13,9 +13,13 @@ while (true)
     Console.WriteLine("1 - Cadastrar Equipe");
     Console.WriteLine("2 - Cadastrar Jogador");
     Console.WriteLine("3 - Cadastrar Torneio");
-    Console.WriteLine("4 - Cadastrar Partida");
-    Console.WriteLine("5 - Listar Equipes");
-    Console.WriteLine("6 - Listar Jogadores");
+    Console.WriteLine("4 - Inscrever Equipe");
+    Console.WriteLine("5 - Cadastrar Partida");
+    Console.WriteLine("6 - Listar Equipes");
+    Console.WriteLine("7 - Listar Jogadores");
+    Console.WriteLine("8 - Listar Torneios");
+    Console.WriteLine("9 - Listar Partidas");
+    Console.WriteLine("10 - Alterar Status do torneio");
     Console.WriteLine("0 - Sair");
     Console.WriteLine("===============================");
 
@@ -36,12 +40,32 @@ while (true)
             CadastrarTorneio();
             break;
 
+        case "4":
+            InscreverEquipe();
+            break;
+
         case "5":
-            ListarEquipes();
+            RealizarPartida();
             break;
 
         case "6":
+            ListarEquipes();
+            break;
+
+        case "7":
             ListarJogadores();
+            break;
+
+        case "8":
+            ListarTorneios();
+            break;
+
+        case "9":
+            ListarPartidas();
+            break;
+
+        case "10":
+            AlterarStatusPartida();
             break;
 
         case "0":
@@ -198,7 +222,10 @@ void CadastrarJogador()
 void ListarJogadores()
 {
     if (Jogadores.Count == 0)
+    {
         Console.WriteLine("Não existem jogadores cadastrados!");
+        return;
+    }
 
     Jogadores.ForEach(j => Console.WriteLine(j));
 }
@@ -277,4 +304,262 @@ void CadastrarTorneio()
     var torneio = new Torneio(codigoTorneio, nomeTorneio, nomeJogo, modalidadeEscolhida, maxEquipes, dataInicio, dataTermino, premiacao);
     Torneios.Add(torneio);
     Console.WriteLine($"{torneio} | Torneio criado com sucesso!");
+}
+
+void ListarTorneios()
+{
+    if (Torneios.Count == 0)
+    {
+        Console.WriteLine("Não existem Torneios criados!");
+        return;
+    }
+
+    Torneios.ForEach(t => Console.WriteLine(t));
+}
+
+void InscreverEquipe()
+{
+    if (Torneios.Count == 0)
+    {
+        Console.WriteLine("Não existem Torneios criados!");
+        return;
+    }
+
+    if (Equipes.Count == 0)
+    {
+        Console.WriteLine("Não existem Equipes cadastradas!");
+        return;
+    }
+
+    ListarTorneios();
+
+    Console.WriteLine("Digite o código do Torneio que deseja inscrever a equipe: ");
+
+    string torneioEscolhido = Console.ReadLine();
+    while (string.IsNullOrWhiteSpace(torneioEscolhido) || !Torneios.Any(t => t.CodigoUnico == torneioEscolhido))
+    {
+        Console.WriteLine(string.IsNullOrWhiteSpace(torneioEscolhido)
+            ? "Código obrigatório"
+            : "Torneio não encontrado");
+        torneioEscolhido = Console.ReadLine();
+    }
+
+    var torneio = Torneios.FirstOrDefault(t => t.CodigoUnico == torneioEscolhido);
+
+    ListarEquipes();
+
+    Console.WriteLine("Digite a TAG da Equipe que Deseja Inscrever: ");
+
+    string equipeEscolhida = Console.ReadLine().ToUpper();
+    while (string.IsNullOrWhiteSpace(equipeEscolhida) || !Equipes.Any(e => e.Tag == equipeEscolhida))
+    {
+        Console.WriteLine(string.IsNullOrWhiteSpace(equipeEscolhida)
+            ? "A TAG não pode ser vazia"
+            : "Equipe não encontrada");
+
+        equipeEscolhida = Console.ReadLine().ToUpper();
+    }
+
+    var equipe = Equipes.FirstOrDefault(e => e.Tag == equipeEscolhida);
+
+    if (torneio.Equipes.Any(e => e.Tag == equipe.Tag))
+    {
+        Console.WriteLine("Equipe já inscrita neste torneio!");
+        return;
+    }
+
+    if (torneio.Equipes.Count >= torneio.MaxEquipes)
+    {
+        Console.WriteLine("Torneio já atingiu o limite de equipes!");
+        return;
+    }
+
+    torneio.Equipes.Add(equipe);
+}
+
+void RealizarPartida()
+{
+    if (Torneios.Count == 0)
+    {
+        Console.WriteLine("Não existem Torneios criados!");
+        return;
+    }
+
+    if (Equipes.Count == 0)
+    {
+        Console.WriteLine("Não existem Equipes cadastradas!");
+        return;
+    }
+
+    Console.WriteLine("Digite o código da Partida: ");
+
+    string codigoPartida = Console.ReadLine();
+    while (string.IsNullOrWhiteSpace(codigoPartida) || Partidas.Any(p => p.CodigoPartida == codigoPartida))
+    {
+        Console.WriteLine(string.IsNullOrWhiteSpace(codigoPartida)
+            ? "Código não pode ser vazio"
+            : "Código já existe, digite outro código");
+
+        codigoPartida = Console.ReadLine();
+    }
+
+    ListarTorneios();
+
+    Console.WriteLine("Digite o código do torneio no qual a partida será realizada: ");
+
+    string torneioEscolhido = Console.ReadLine();
+    while (string.IsNullOrWhiteSpace(torneioEscolhido) || !Torneios.Any(t => t.CodigoUnico == torneioEscolhido))
+    {
+        Console.WriteLine(string.IsNullOrWhiteSpace(torneioEscolhido)
+            ? "Código obrigatório"
+            : "Torneio não encontrado");
+        torneioEscolhido = Console.ReadLine();
+    }
+
+    var torneio = Torneios.FirstOrDefault(t => t.CodigoUnico == torneioEscolhido);
+
+    ListarEquipes();
+
+    Console.WriteLine("Digite a TAG da equipe Mandante: ");
+
+    string tagMandante = Console.ReadLine().ToUpper();
+    while (string.IsNullOrWhiteSpace(tagMandante) || !torneio.Equipes.Any(e => e.Tag == tagMandante))
+    {
+        Console.WriteLine(string.IsNullOrWhiteSpace(tagMandante)
+            ? "TAG não pode ser vazia"
+            : "Equipe não encontrada");
+
+        tagMandante = Console.ReadLine().ToUpper();
+    }
+
+    var equipeMandante = torneio.Equipes.FirstOrDefault(e => e.Tag == tagMandante);
+
+    Console.WriteLine("Digite a TAG da equipe Visitante: ");
+
+    string tagVisitante = Console.ReadLine().ToUpper();
+    while (string.IsNullOrWhiteSpace(tagVisitante) || !torneio.Equipes.Any(e => e.Tag == tagVisitante) || tagMandante == tagVisitante)
+    {
+        Console.WriteLine(string.IsNullOrWhiteSpace(tagVisitante)
+            ? "TAG não pode ser vazia"
+            : tagMandante == tagVisitante
+                ? "Equipe visitante não pode ser igual à mandante"
+                : "Equipe não encontrada no torneio");
+
+        tagVisitante = Console.ReadLine().ToUpper();
+    }
+
+    var equipeVisitante = torneio.Equipes.FirstOrDefault(e => e.Tag == tagVisitante);
+
+    if (torneio.Partidas.Any(p => (p.EquipeMandante.Tag == equipeMandante.Tag && p.EquipeVisitante.Tag == equipeVisitante.Tag) ||
+                                  (p.EquipeMandante.Tag == equipeVisitante.Tag && p.EquipeVisitante.Tag == equipeMandante.Tag)))
+    {
+        Console.WriteLine("Já existe uma partida entre essas duas equipes neste torneio!");
+        return;
+    }
+
+    Console.WriteLine("Digite a data e hora da partida (dd/MM/yyyy HH:mm): ");
+
+    DateTime dataHoraPartida;
+    while (!DateTime.TryParse(Console.ReadLine(), out dataHoraPartida) || dataHoraPartida < torneio.DataInicio || dataHoraPartida > torneio.DataTermino)
+        Console.WriteLine("Data Inválida! Partida deve ser realizada no período em que ocorre o torneio");
+
+    if (torneio.Status != StatusTorneioEnum.EmAndamento)
+    {
+        Console.WriteLine("O torneio precisa estar Em Andamento para registrar resultado!");
+        return;
+    }
+
+    Console.WriteLine("Qual o placar da equipe Mandante? ");
+
+    int placarMandante;
+    while (!int.TryParse(Console.ReadLine(), out placarMandante) || placarMandante < 0)
+        Console.WriteLine("Placar não pode ser negativo!");
+
+    Console.WriteLine("Qual o placar da equipe Visitante? ");
+
+    int placarVisitante;
+    while (!int.TryParse(Console.ReadLine(), out placarVisitante) || placarVisitante < 0)
+        Console.WriteLine("Placar não pode ser negativo!");
+
+    var partida = new Partida(codigoPartida, torneio, equipeMandante, equipeVisitante, dataHoraPartida, placarMandante, placarVisitante);
+    Partidas.Add(partida);
+    torneio.Partidas.Add(partida);
+
+    Console.WriteLine($"{partida}");
+}
+
+void ListarPartidas()
+{
+    if (Partidas.Count == 0)
+    {
+        Console.WriteLine("Não existem partidas cadastradas");
+        return;
+    }
+
+    Partidas.ForEach(p => Console.WriteLine(p));
+}
+
+void AlterarStatusPartida()
+{
+    if (Torneios.Count == 0)
+    {
+        Console.WriteLine("Nenhum torneio cadastrado!");
+        return;
+    }
+
+    ListarTorneios();
+
+    Console.WriteLine("Digite o código do torneio: ");
+    string codigoTorneio = Console.ReadLine();
+    while (string.IsNullOrWhiteSpace(codigoTorneio) || !Torneios.Any(t => t.CodigoUnico == codigoTorneio))
+    {
+        Console.WriteLine(string.IsNullOrWhiteSpace(codigoTorneio)
+            ? "Código obrigatório"
+            : "Torneio não encontrado");
+        codigoTorneio = Console.ReadLine();
+    }
+
+    var torneio = Torneios.FirstOrDefault(t => t.CodigoUnico == codigoTorneio);
+
+    Console.WriteLine($"Status atual: {torneio.Status}");
+    Console.WriteLine("=== NOVO STATUS ===");
+    Console.WriteLine("1 - Planejado");
+    Console.WriteLine("2 - Em Andamento");
+    Console.WriteLine("3 - Encerrado");
+
+    int opcao;
+    while (!int.TryParse(Console.ReadLine(), out opcao) || opcao < 1 || opcao > 3)
+        Console.WriteLine("Escolha a opção 1, 2 ou 3");
+
+    StatusTorneioEnum novoStatus = (StatusTorneioEnum)opcao;
+
+    if (novoStatus == torneio.Status)
+    {
+        Console.WriteLine("O torneio já está com esse status!");
+        return;
+    }
+
+    if (novoStatus < torneio.Status)
+    {
+        Console.WriteLine("Não é permitido retroceder o status do torneio!");
+        return;
+    }
+
+    if (novoStatus == StatusTorneioEnum.Encerrado)
+    {
+        if (torneio.Equipes.Count < 2)
+        {
+            Console.WriteLine("Torneio precisa de ao menos 2 equipes inscritas para ser encerrado!");
+            return;
+        }
+
+        if (torneio.Partidas.Count == 0)
+        {
+            Console.WriteLine("Torneio precisa de ao menos 1 partida registrada para ser encerrado!");
+            return;
+        }
+    }
+
+    torneio.AlterarStatusTorneio(novoStatus);
+    Console.WriteLine($"Status alterado para {novoStatus} com sucesso!");
 }
