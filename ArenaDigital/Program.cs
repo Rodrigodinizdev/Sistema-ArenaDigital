@@ -109,7 +109,6 @@ void ListarEquipes()
     Equipes.ForEach(e => Console.WriteLine(e));
 }
 
-
 void CadastrarJogador()
 {
     Console.WriteLine("Digite o nome do jogador: ");
