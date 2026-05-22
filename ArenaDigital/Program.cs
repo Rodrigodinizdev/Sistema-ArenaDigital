@@ -20,6 +20,7 @@ while (true)
     Console.WriteLine("8 - Listar Torneios");
     Console.WriteLine("9 - Listar Partidas");
     Console.WriteLine("10 - Alterar Status do torneio");
+    Console.WriteLine("11 - Buscar jogador pelo nome");
     Console.WriteLine("0 - Sair");
     Console.WriteLine("===============================");
 
@@ -66,6 +67,10 @@ while (true)
 
         case "10":
             AlterarStatusPartida();
+            break;
+
+        case "11":
+            BuscarJogadorPorNome();
             break;
 
         case "0":
@@ -562,3 +567,33 @@ void AlterarStatusPartida()
     torneio.AlterarStatusTorneio(novoStatus);
     Console.WriteLine($"Status alterado para {novoStatus} com sucesso!");
 }
+
+void BuscarJogadorPorNome()
+{
+    if (Jogadores.Count == 0)
+    {
+        Console.WriteLine("Não existe jogadores cadastrados");
+        return;
+    }
+
+    Console.WriteLine("Digite parte do NickName do jogador: ");
+
+    string parteNome = Console.ReadLine();
+    while (string.IsNullOrWhiteSpace(parteNome))
+    {
+        Console.WriteLine("NickName não pode ser vazio");
+        parteNome = Console.ReadLine();
+    }
+
+    var busca = Jogadores.Where(j => j.NickName.Contains(parteNome, StringComparison.OrdinalIgnoreCase)).ToList();
+
+    if(busca.Count == 0)
+    {
+        Console.WriteLine("Jogador não encontrado");
+        return;
+    }
+
+    busca.ForEach(j => Console.WriteLine(j));
+   
+}
+
